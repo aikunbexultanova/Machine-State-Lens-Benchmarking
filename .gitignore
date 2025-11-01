@@ -1,0 +1,15 @@
+# build/outputs
+_lens_results*/
+data_proccessed/
+
+data_visualization.ipynb
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.ipynb_checkpoints/
+.vscode/
+
+.DS_Store
