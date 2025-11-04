@@ -172,7 +172,6 @@ async def main(args, config, input_file, eval_file, gt_class, n):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
-    # build the parser ONCE
     parser = argparse.ArgumentParser()
     parser.add_argument("--lens_id", default="lns-1d519091822706e2-bc108andqxf8b4os", type=str)
     parser.add_argument("--api_key", default="ai048b7-9a61874c48", type=str)
@@ -186,7 +185,7 @@ if __name__ == "__main__":
     with open(f"data_processed/{args.dataset_name}/config.json", "r", encoding="utf-8") as f:
         config = json.load(f)
     
-    reduced_test_file_numbers = np.arange(20)
+    reduced_test_file_numbers = np.arange(20) # randomly select testing files 
 
     for gt_class in config['labels']:
         for file_number in reduced_test_file_numbers:

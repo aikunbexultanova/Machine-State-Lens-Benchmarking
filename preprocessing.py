@@ -62,4 +62,4 @@ if __name__ == "__main__":
             
             per_label_counts[label_str] += 1
             
-        print(per_label_counts)    
+        print(train_or_test, per_label_counts)   

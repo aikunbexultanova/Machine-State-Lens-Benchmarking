@@ -1,44 +1,29 @@
 import numpy as np
 import pandas as pd
+import argparse
 from sklearn.metrics import accuracy_score, f1_score
 from pathlib import Path
 import re
 import json
 import os
 
-ACTIVITIES = ["abnormal", "normal"]
-
-# metadata = {
-#     "csv_configs" : { "timestamp_column": "timestamp",
-#                     "data_columns": ["a_1", "a_2", "a_3"],
-#                     "window_size": 64,
-#                     "step_size": 8 },
-#     "normalize_input": False,
-#     "data_prenormalized": False,
-#     "commit": "ace1946e6"
-# }
-
-# metadata_json = "metrics/metadata.json"
-# os.makedirs(os.path.dirname(metadata_json), exist_ok=True)
-# with open(metadata_json, "w") as f:
-#     json.dump(metadata, f, indent=2)
-
-import numpy as np
-import pandas as pd
-from sklearn.metrics import accuracy_score, f1_score
-from pathlib import Path
-import re
-
 FNAME_RE = re.compile(r'^(?P<activity>\w+)_(?P<file_number>\d+)_seed(?P<seed>\d+)\.csv$')
+
+def save_metadata(metadata: dict, file_path: str):
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    with open(file_path, "w") as f:
+        json.dump(metadata, f, indent=2)
+
 
 def compute_metrics(gt, pred):
     acc = accuracy_score(gt, pred)
     f1  = f1_score(gt, pred, average="macro")
     return acc, f1
 
-def gather_one_dir(shot_dir: Path, shot: int) -> pd.DataFrame:
+
+def gather_one_dir(shot_dir: Path, shot: int, labels: list):
     rows = []
-    for a in ACTIVITIES:
+    for a in labels:
         for p in sorted((shot_dir).glob(f"{a}_*.csv")):
             m = FNAME_RE.match(p.name)
             if not m:
@@ -63,16 +48,25 @@ def gather_one_dir(shot_dir: Path, shot: int) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    dataset_name = "Heartbeat"
-    with open(f"data_processed/{dataset_name}/config.json", "r", encoding="utf-8") as f:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_name", default="Heartbeat", type=str)
+    parser.add_argument("--base_output_path", type=str, default="out")
+    parser.add_argument("--commit", type=str, default="ace1946e6")
+    
+    args = parser.parse_args()
+
+    with open(f"data_processed/{args.dataset_name}/config.json", "r", encoding="utf-8") as f:
         config = json.load(f)
+         
+    metadata = {"commit": args.commit}  
+    save_metadata(metadata, f"{args.base_output_path}/metrics/metadata.json")        
         
     per_seed_rows = []
     for shot in range(1, config["N_max"]):  # lens_results_1shot ... lens_results_10shot
-        shot_dir = Path(f"lens_results_{shot}shot")
+        shot_dir = Path(f"{args.base_output_path}/lens_results_{shot}shot")
         if not shot_dir.exists():
             continue
-        df_dir = gather_one_dir(shot_dir, shot)
+        df_dir = gather_one_dir(shot_dir, shot, config["labels"])
         per_seed_rows.append(df_dir)
 
     df_per_seed = pd.concat(per_seed_rows, ignore_index=True)
@@ -106,10 +100,10 @@ if __name__ == "__main__":
         .round(3)
     )
 
-    out_root = Path("out/metrics")
-    out_root.mkdir(exist_ok=True, parents=True)
-    df_per_seed.to_csv(out_root / "metrics_all_seeds.csv", index=False)
-    df_per_file.to_csv(out_root / "metrics_all_files.csv", index=False)
-    df_shot_activity.to_csv(out_root / "metrics_seedavg_per_shot_activity.csv", index=False)
-    by_shot.to_csv(out_root / "metrics_shot.csv", index=False)
-    by_activity.to_csv(out_root / "metrics_activity.csv", index=False)
+    out_metrics = Path(f"{args.base_output_path}/metrics")
+    out_metrics.mkdir(exist_ok=True, parents=True)
+    df_per_seed.to_csv(out_metrics / "metrics_all_seeds.csv", index=False)
+    df_per_file.to_csv(out_metrics / "metrics_all_files.csv", index=False)
+    df_shot_activity.to_csv(out_metrics / "metrics_seedavg_per_shot_activity.csv", index=False)
+    by_shot.to_csv(out_metrics / "metrics_shot.csv", index=False)
+    by_activity.to_csv(out_metrics / "metrics_activity.csv", index=False)
