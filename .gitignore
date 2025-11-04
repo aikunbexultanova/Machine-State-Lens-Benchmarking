@@ -1,6 +1,7 @@
 # build/outputs
 _lens_results*/
-data_proccessed/
+data_processed/
+out
 
 data_visualization.ipynb
 
@@ -11,5 +12,7 @@ __pycache__/
 
 .ipynb_checkpoints/
 .vscode/
+.csv
+.json
 
 .DS_Store

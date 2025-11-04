@@ -16,12 +16,9 @@ import random
 from collections import defaultdict
 from tqdm import tqdm
 import sys
-# python3 tsc_1/lens_ts.py --api_key ai048b7-9a61874c48 --input_file prepared_test/Running/imu_0.csv 
 
-ACTIVITIES = ["Badminton", "Walking", "Standing", "Running"]
-async def main(args):
-    # Get eval labels
-    # if args.gt_class is not None:
+
+async def main(args, config, input_file, eval_file, gt_class, n):
     eval_outputs = []
         
     client = ArchetypeAI(args.api_key, args.api_endpoint)
@@ -48,19 +45,18 @@ async def main(args):
     if getattr(args, "seed", None) is not None:
         random.seed(args.seed)
     
-    base = Path("prepared_train")
-    n = args.n
-    MAX_IDX = 9
-    k = min(n, MAX_IDX + 1) 
+    base = Path(f"data_processed/{args.dataset_name}/prepared_train")
+    N = config["N_max"]
+    k = min(n, N) 
 
-    files_nshot = []  # list of (label, path)
+    files_nshot = []
 
-    for act in ACTIVITIES:
-        idxs = random.sample(range(MAX_IDX + 1), k=k)
+    for label in config["labels"]:
+        idxs = random.sample(range(N), k=k)
         for i in idxs:
-            p = base / f"{act}_imu_{i}.csv"
+            p = base / f"{label}_train_{i}.csv"
             if p.exists():
-                files_nshot.append((act, str(p)))
+                files_nshot.append((label, str(p)))
             else:
                 logging.warning(f"Missing file: {p}")
                 
@@ -74,13 +70,13 @@ async def main(args):
     label_file_dict = dict(label_file_dict) 
     logging.info({k: len(v) for k, v in label_file_dict.items()})
     
-    files_nshot_json = args.eval_file.replace(".csv", ".json")
+    files_nshot_json = eval_file.replace(".csv", ".json")
     os.makedirs(os.path.dirname(files_nshot_json), exist_ok=True)
     with open(files_nshot_json, "w") as f:
         json.dump(
             {
                 "seed": args.seed,
-                "n": args.n,
+                "n": n,
                 "files_nshot": files_nshot,
                 "label_file_counts": {k: len(v) for k, v in label_file_dict.items()},
             },
@@ -95,24 +91,22 @@ async def main(args):
         "type": "session.modify",
         "event_data": {
             "input_n_shot": label_file_dict,
-            "csv_configs" : { "timestamp_column": "timestamp",
-                            "data_columns": ["a_x", "a_y", "a_z"],
-                            "window_size": 64,
-                            "step_size": 8 },
-            "normalize_input": False
+            "csv_configs" : { "timestamp_column": config["timestamp_column"],
+                            "data_columns": config["data_columns"],
+                            "window_size": config["window_size"],
+                            "step_size": config["step_size"]},
+            "normalize_input": config["normalize_input"]
         }
     }
     response = client.lens.sessions.write(session_id, event_message)
-    # print(response)
     
-
     # Create SSE reader
     sse_reader = client.lens.sessions.create_sse_consumer(session_id)
     # time.sleep(5) # Wait for the session to be ready
     await asyncio.sleep(2)
 
     # Upload input file
-    upload_response = client.files.local.upload(args.input_file)
+    upload_response = client.files.local.upload(input_file)
 
     # Set lens input and output stream
     client.lens.sessions.process_event(session_id, {
@@ -121,8 +115,8 @@ async def main(args):
             "stream_type": "csv_file_reader",
             "stream_config": {
                 "file_id": upload_response["file_id"],
-                "window_size": 64,
-                "step_size": 8,
+                "window_size": config["window_size"],
+                "step_size": config["step_size"],
                 "loop_recording": False,
                 "output_format": "",
             }
@@ -132,18 +126,11 @@ async def main(args):
     
     # Read lens outputs
     print("--- Read outputs ---")
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
     try:
         for event in sse_reader.read(block=True):
             t = event.get("type")
-            print(t)
-            # pprint(event)
-            # if t == "session.modify.result":
-            #     pprint(event)
-                # print(t)
-            if t == "inference.result":
-                # pprint(event)
+            if t == "inference.result":  
                 print(t)
                 query_metadata = event["event_data"]["query_metadata"]["query_metadata"]
                 read_index = query_metadata["read_index"]   # The first index in the window
@@ -155,8 +142,7 @@ async def main(args):
                 print(f'Response:       {response}') 
 
                 # Get the ground truth label: the state at the last time point in the window
-                if args.gt_class is not None:
-                    gt_class = args.gt_class
+                if gt_class is not None:
                     window_end_index = read_index + window_size - 1
                     print(f'Ground truth:   {gt_class}\n')
                     eval_outputs.append({
@@ -173,14 +159,14 @@ async def main(args):
         sse_reader.close()
         client.lens.sessions.destroy(session_id=session_id)
 
-        if args.eval_file and args.gt_class:
+        if eval_file and gt_class:
             if not eval_outputs:
-                logging.warning(f"No inference results for {args.input_file}; skipping write. n={args.n}, seed={args.seed}")
+                logging.warning(f"No inference results for {input_file}; skipping write. n={n}, seed={args.seed}")
             else:
                 df_outputs = pd.DataFrame(eval_outputs).sort_values("window_start_index")
-                os.makedirs(os.path.dirname(args.eval_file), exist_ok=True)
-                df_outputs.to_csv(args.eval_file, index=False)
-                print(f"Eval results exported to {args.eval_file}")
+                os.makedirs(os.path.dirname(eval_file), exist_ok=True)
+                df_outputs.to_csv(eval_file, index=False)
+                print(f"Eval results exported to {eval_file}")
 
 
 if __name__ == "__main__":
@@ -190,49 +176,38 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--lens_id", default="lns-1d519091822706e2-bc108andqxf8b4os", type=str)
     parser.add_argument("--api_key", default="ai048b7-9a61874c48", type=str)
-    parser.add_argument("--input_file", type=str)
-    parser.add_argument("--eval_file", type=str)
     parser.add_argument("--api_endpoint", default="https://api.archetypeai.dev/v0.5", type=str)
-    parser.add_argument("--gt_class", type=str)
-    parser.add_argument("--n", type=int)
-    
+    parser.add_argument("--dataset_name", default="Heartbeat", type=str)
     parser.add_argument("--repeats", type=int, default=3, help="How many randomizations per setting")
     parser.add_argument("--seed_base", type=int, default=0, help="Base for deterministic seeds")
     
-    reduced_test_file_numbers = [1, 5, 7, 9]
+    args = parser.parse_args()
+    
+    with open(f"data_processed/{args.dataset_name}/config.json", "r", encoding="utf-8") as f:
+        config = json.load(f)
+    
+    reduced_test_file_numbers = np.arange(20)
 
-    for gt_class in ACTIVITIES:
+    for gt_class in config['labels']:
         for file_number in reduced_test_file_numbers:
-            input_file = f"prepared_test/{gt_class}_test_imu_{file_number}.csv"
+            input_file = f"data_processed/{args.dataset_name}/prepared_test/{gt_class}_test_{file_number}.csv"
             assert os.path.exists(input_file)
-            for n in range(1, 11):  
+            for n in range(1, config["N_max"] + 1):  
                 # base output path
-                base_dir = f"tsc_1/lens_results_{n}shot"
+                base_dir = f"out/lens_results_{n}shot"
                 os.makedirs(base_dir, exist_ok=True)
-
-                args = parser.parse_args(args=[
-                    "--lens_id", "lns-1d519091822706e2-bc108andqxf8b4os",
-                    "--api_key", "ai048b7-9a61874c48",
-                    "--input_file", input_file,
-                    "--eval_file", os.path.join(base_dir, f"{gt_class}_{file_number}.csv"),
-                    "--api_endpoint", "https://api.archetypeai.dev/v0.5",
-                    "--gt_class", gt_class,
-                    "--n", str(n),
-                    # repeats/seed_base
-                ])
                 
-                base_eval_file = os.path.join(base_dir, f"{gt_class}_{file_number}.csv")
+                eval_file = os.path.join(base_dir, f"{gt_class}_{file_number}.csv")
+                
                 for r in range(args.repeats):
                     args.seed = args.seed_base + r
 
-                    p = Path(base_eval_file)  # tsc_1/lens_results_1shot/Walking_0.csv
-                    out_csv = p.with_name(f"{p.stem}_seed{args.seed}{p.suffix}")   # Walking_0_seed3.csv
-                    files_nshot = out_csv.with_suffix(".json")                         # Walking_0_seed3.json
+                    p = Path(eval_file)  
+                    out_csv = p.with_name(f"{p.stem}_seed{args.seed}{p.suffix}")   
+                    files_nshot = out_csv.with_suffix(".json")                        
                     
                     if out_csv.exists() and files_nshot.exists():
-                    # if files_nshot.exists():
                         print(f"[skip] already have {out_csv.name} and {files_nshot.name}, n={n}")
                         continue 
                     
-                    args.eval_file = str(out_csv)
-                    asyncio.run(main(args))
+                    asyncio.run(main(args, config, input_file, str(out_csv), gt_class, n))

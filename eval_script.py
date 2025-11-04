@@ -6,22 +6,22 @@ import re
 import json
 import os
 
-ACTIVITIES = ["Walking", "Standing", "Running", "Badminton"]
+ACTIVITIES = ["abnormal", "normal"]
 
-metadata = {
-    "csv_configs" : { "timestamp_column": "timestamp",
-                    "data_columns": ["a_x", "a_y", "a_z"],
-                    "window_size": 64,
-                    "step_size": 8 },
-    "normalize_input": False,
-    "data_prenormalized": False,
-    "commit": "ace1946e6"
-}
+# metadata = {
+#     "csv_configs" : { "timestamp_column": "timestamp",
+#                     "data_columns": ["a_1", "a_2", "a_3"],
+#                     "window_size": 64,
+#                     "step_size": 8 },
+#     "normalize_input": False,
+#     "data_prenormalized": False,
+#     "commit": "ace1946e6"
+# }
 
-metadata_json = "tsc_1/metrics/metadata.json"
-os.makedirs(os.path.dirname(metadata_json), exist_ok=True)
-with open(metadata_json, "w") as f:
-    json.dump(metadata, f, indent=2)
+# metadata_json = "metrics/metadata.json"
+# os.makedirs(os.path.dirname(metadata_json), exist_ok=True)
+# with open(metadata_json, "w") as f:
+#     json.dump(metadata, f, indent=2)
 
 import numpy as np
 import pandas as pd
@@ -29,7 +29,6 @@ from sklearn.metrics import accuracy_score, f1_score
 from pathlib import Path
 import re
 
-ACTIVITIES = ["Walking", "Standing", "Running", "Badminton"]
 FNAME_RE = re.compile(r'^(?P<activity>\w+)_(?P<file_number>\d+)_seed(?P<seed>\d+)\.csv$')
 
 def compute_metrics(gt, pred):
@@ -62,10 +61,15 @@ def gather_one_dir(shot_dir: Path, shot: int) -> pd.DataFrame:
             })
     return pd.DataFrame(rows)
 
+
 if __name__ == "__main__":
+    dataset_name = "Heartbeat"
+    with open(f"data_processed/{dataset_name}/config.json", "r", encoding="utf-8") as f:
+        config = json.load(f)
+        
     per_seed_rows = []
-    for shot in range(1, 11):  # lens_results_1shot ... lens_results_10shot
-        shot_dir = Path(f"tsc_1/lens_results_{shot}shot")
+    for shot in range(1, config["N_max"]):  # lens_results_1shot ... lens_results_10shot
+        shot_dir = Path(f"lens_results_{shot}shot")
         if not shot_dir.exists():
             continue
         df_dir = gather_one_dir(shot_dir, shot)
@@ -102,7 +106,7 @@ if __name__ == "__main__":
         .round(3)
     )
 
-    out_root = Path("tsc_1/metrics")
+    out_root = Path("out/metrics")
     out_root.mkdir(exist_ok=True, parents=True)
     df_per_seed.to_csv(out_root / "metrics_all_seeds.csv", index=False)
     df_per_file.to_csv(out_root / "metrics_all_files.csv", index=False)
