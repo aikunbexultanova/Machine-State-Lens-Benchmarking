@@ -2,6 +2,7 @@
 _lens_results*/
 data_processed/
 out
+logs
 
 data_visualization.ipynb
 

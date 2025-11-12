@@ -176,7 +176,7 @@ if __name__ == "__main__":
     parser.add_argument("--lens_id", default="lns-1d519091822706e2-bc108andqxf8b4os", type=str)
     parser.add_argument("--api_key", default="ai048b7-9a61874c48", type=str)
     parser.add_argument("--api_endpoint", default="https://api.archetypeai.dev/v0.5", type=str)
-    parser.add_argument("--dataset_name", default="Heartbeat", type=str)
+    parser.add_argument("--dataset_name", default="ACSF1", type=str)
     parser.add_argument("--repeats", type=int, default=3, help="How many randomizations per setting")
     parser.add_argument("--seed_base", type=int, default=0, help="Base for deterministic seeds")
     
@@ -185,13 +185,21 @@ if __name__ == "__main__":
     with open(f"data_processed/{args.dataset_name}/config.json", "r", encoding="utf-8") as f:
         config = json.load(f)
     
-    reduced_test_file_numbers = np.arange(20) # randomly select testing files 
+    rng = random.Random(42)
+    reduced_test_file_numbers = sorted(rng.sample(range(10), 3))
+    print(reduced_test_file_numbers) #[0, 1, 4]
+    
+    reduced_n_shots = sorted(rng.sample(range(1, config["N_max"] + 1), 5))
+    print(reduced_n_shots) # [1, 3, 4, 6, 10]
+    
+    reduced_labels = sorted(rng.sample(config["labels"], 5))
+    print(reduced_labels) # ['0', '1', '6', '7', '8']
 
-    for gt_class in config['labels']:
+    for gt_class in reduced_labels:
         for file_number in reduced_test_file_numbers:
             input_file = f"data_processed/{args.dataset_name}/prepared_test/{gt_class}_test_{file_number}.csv"
             assert os.path.exists(input_file)
-            for n in range(1, config["N_max"] + 1):  
+            for n in reduced_n_shots:  
                 # base output path
                 base_dir = f"out/lens_results_{n}shot"
                 os.makedirs(base_dir, exist_ok=True)
