@@ -19,7 +19,8 @@ warnings.filterwarnings(
 )
 mutivariate_list = []
 
-def prepare_sample(dataset_name, t, sample_sensor_data, file_idx, label_name, dataset_type):
+
+def prepare_sample(dataset_output_dir, dataset_name, t, sample_sensor_data, file_idx, label_name, dataset_type, train_or_test):
     if dataset_type == "Univariate":
         df = pd.DataFrame(sample_sensor_data[:, :], columns=['a_1'])
     else:    
@@ -27,28 +28,22 @@ def prepare_sample(dataset_name, t, sample_sensor_data, file_idx, label_name, da
     df['timestamp'] = UTC_CONSTANT + t
     df.insert(0, 'timestamp', df.pop('timestamp'))
     
-    path_to_dir = f"data_processed/{dataset_name}/prepared_{train_or_test.lower()}"
+    path_to_dir = f"{dataset_output_dir}/{dataset_name}/prepared_{train_or_test.lower()}"
     os.makedirs(path_to_dir, exist_ok=True)
         
     output_path= f'{path_to_dir}/{label_name}_{train_or_test.lower()}_{file_idx}.csv'
         
     df.to_csv(output_path, index=False)
     return df
-    
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", default="ACSF1", type=str)
-    parser.add_argument("--dataset_type", default="Univariate", type=str)
-    parser.add_argument("--frequency", default=0.1, type=float)
-    args = parser.parse_args()
-    
+
+def preprocess_dataset(args):
     for train_or_test in ["TRAIN", "TEST"]:
         per_label_counts = defaultdict(int)
         with open(f'../data/{args.dataset_type}_ts/{args.dataset_name}/{args.dataset_name}_{train_or_test}.pickle', 'rb') as f:
             data = pickle.load(f)
-        print("Data shape: ", data["channel_data"][0].shape)
-        print("Label shape", data["channel_data"][1].shape)
+        print(f"{train_or_test} data shape: ", data["channel_data"][0].shape)
+        print(f"{train_or_test} label shape", data["channel_data"][1].shape)
         
         sensor_data = data["channel_data"][0]
         label_data = data["channel_data"][1]
@@ -60,12 +55,22 @@ if __name__ == "__main__":
         t = np.arange(T) / args.frequency
         
         for sample_id in range(sensor_data.shape[0]):
-            label_int = int(label_data[sample_id])
+            # label_int = int(label_data[sample_id])
             label_str = str(label_map_inv[label_data[sample_id]])
             
             sample_id_in_activity = per_label_counts[label_str]
-            prepare_sample(args.dataset_name, t, sensor_data[sample_id], sample_id_in_activity, label_str, args.dataset_type)
+            prepare_sample(args.dataset_output_dir, args.dataset_name, t, sensor_data[sample_id], sample_id_in_activity, label_str, args.dataset_type, train_or_test)
             
-            per_label_counts[label_str] += 1
+            per_label_counts[label_str] += 1    
+    return    
             
-        print(train_or_test, per_label_counts)   
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_name", default="ACSF1", type=str)
+    parser.add_argument("--dataset_type", default="Univariate", type=str)
+    parser.add_argument("--dataset_output_dir", default="data_processed", type=str)
+    parser.add_argument("--frequency", default=0.1, type=float)
+    args = parser.parse_args()
+    
+    preprocess_dataset(args)

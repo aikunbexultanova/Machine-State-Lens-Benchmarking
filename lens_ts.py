@@ -16,6 +16,8 @@ import random
 from collections import defaultdict
 from tqdm import tqdm
 import sys
+from preprocessing import preprocess_dataset
+from eval_script import eval_results
 
 
 async def main(args, config, input_file, eval_file, gt_class, n):
@@ -45,7 +47,7 @@ async def main(args, config, input_file, eval_file, gt_class, n):
     if getattr(args, "seed", None) is not None:
         random.seed(args.seed)
     
-    base = Path(f"data_processed/{args.dataset_name}/prepared_train")
+    base = Path(f"{args.dataset_output_dir}/{args.dataset_name}/prepared_train")
     N = config["N_max"]
     k = min(n, N) 
 
@@ -176,13 +178,23 @@ if __name__ == "__main__":
     parser.add_argument("--lens_id", default="lns-1d519091822706e2-bc108andqxf8b4os", type=str)
     parser.add_argument("--api_key", default="ai048b7-9a61874c48", type=str)
     parser.add_argument("--api_endpoint", default="https://api.archetypeai.dev/v0.5", type=str)
+    
     parser.add_argument("--dataset_name", default="ACSF1", type=str)
+    parser.add_argument("--dataset_type", default="Univariate", type=str)
+    parser.add_argument("--dataset_output_dir", default="data_processed", type=str)
+    parser.add_argument("--base_config_dir", default="data_configs", type=str)
+    parser.add_argument("--base_output_dir", default="out", type=str)
+    parser.add_argument("--frequency", default=0.1, type=float)
+    
     parser.add_argument("--repeats", type=int, default=3, help="How many randomizations per setting")
     parser.add_argument("--seed_base", type=int, default=0, help="Base for deterministic seeds")
     
     args = parser.parse_args()
     
-    with open(f"data_processed/{args.dataset_name}/config.json", "r", encoding="utf-8") as f:
+    if not os.path.exists(f"{args.dataset_output_dir}/{args.dataset_name}"):
+        preprocess_dataset(args)
+    
+    with open(f"{args.base_config_dir}/{args.dataset_name}_config.json", "r", encoding="utf-8") as f:
         config = json.load(f)
     
     rng = random.Random(42)
@@ -200,11 +212,10 @@ if __name__ == "__main__":
             input_file = f"data_processed/{args.dataset_name}/prepared_test/{gt_class}_test_{file_number}.csv"
             assert os.path.exists(input_file)
             for n in reduced_n_shots:  
-                # base output path
-                base_dir = f"out/lens_results_{n}shot"
-                os.makedirs(base_dir, exist_ok=True)
+                lens_output_dir = f"{args.base_output_dir}/lens_results_{n}shot"
+                os.makedirs(lens_output_dir, exist_ok=True)
                 
-                eval_file = os.path.join(base_dir, f"{gt_class}_{file_number}.csv")
+                eval_file = os.path.join(lens_output_dir, f"{gt_class}_{file_number}.csv")
                 
                 for r in range(args.repeats):
                     args.seed = args.seed_base + r
@@ -218,3 +229,5 @@ if __name__ == "__main__":
                         continue 
                     
                     asyncio.run(main(args, config, input_file, str(out_csv), gt_class, n))
+    
+    eval_results(args, config)                

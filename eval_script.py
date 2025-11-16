@@ -9,10 +9,9 @@ import os
 
 FNAME_RE = re.compile(r'^(?P<activity>\w+)_(?P<file_number>\d+)_seed(?P<seed>\d+)\.csv$')
 
-def save_metadata(metadata: dict, file_path: str):
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with open(file_path, "w") as f:
-        json.dump(metadata, f, indent=2)
+def save_config(config: dict, base_output_dir: str):
+    with open(f"{base_output_dir}/config.json", "w") as f:
+        json.dump(config, f, indent=2)
 
 
 def compute_metrics(gt, pred):
@@ -22,6 +21,7 @@ def compute_metrics(gt, pred):
 
 
 def gather_one_dir(shot_dir: Path, shot: int, labels: list):
+    FNAME_RE = re.compile(r'^(?P<activity>\w+)_(?P<file_number>\d+)_seed(?P<seed>\d+)\.csv$')
     rows = []
     for a in labels:
         for p in sorted((shot_dir).glob(f"{a}_*.csv")):
@@ -47,23 +47,13 @@ def gather_one_dir(shot_dir: Path, shot: int, labels: list):
     return pd.DataFrame(rows)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", default="Heartbeat", type=str)
-    parser.add_argument("--base_output_path", type=str, default="out")
-    parser.add_argument("--commit", type=str, default="ace1946e6")
-    
-    args = parser.parse_args()
-
-    with open(f"data_processed/{args.dataset_name}/config.json", "r", encoding="utf-8") as f:
-        config = json.load(f)
-         
-    metadata = {"commit": args.commit}  
-    save_metadata(metadata, f"{args.base_output_path}/metrics/metadata.json")        
+def eval_results(args, config):
+            
+    save_config(config, args.base_output_dir)      
         
     per_seed_rows = []
-    for shot in range(1, config["N_max"]):  # lens_results_1shot ... lens_results_10shot
-        shot_dir = Path(f"{args.base_output_path}/lens_results_{shot}shot")
+    for shot in range(1, config["N_max"]+1):  # lens_results_1shot ... lens_results_10shot
+        shot_dir = Path(f"{args.base_output_dir}/lens_results_{shot}shot")
         if not shot_dir.exists():
             continue
         df_dir = gather_one_dir(shot_dir, shot, config["labels"])
@@ -100,10 +90,25 @@ if __name__ == "__main__":
         .round(3)
     )
 
-    out_metrics = Path(f"{args.base_output_path}/metrics")
+    out_metrics = Path(f"{args.base_output_dir}/metrics")
     out_metrics.mkdir(exist_ok=True, parents=True)
     df_per_seed.to_csv(out_metrics / "metrics_all_seeds.csv", index=False)
     df_per_file.to_csv(out_metrics / "metrics_all_files.csv", index=False)
     df_shot_activity.to_csv(out_metrics / "metrics_seedavg_per_shot_activity.csv", index=False)
     by_shot.to_csv(out_metrics / "metrics_shot.csv", index=False)
     by_activity.to_csv(out_metrics / "metrics_activity.csv", index=False)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_output_dir", default="data_processed", type=str)
+    parser.add_argument("--dataset_name", default="ACSF1", type=str)
+    parser.add_argument("--base_output_dir", type=str, default="out")
+    parser.add_argument("--base_config_dir", default="data_configs", type=str)
+    
+    args = parser.parse_args()
+    
+    with open(f"{args.base_config_dir}/{args.dataset_name}_config.json", "r", encoding="utf-8") as f:
+        config = json.load(f)
+        
+    eval_results(args, config)    

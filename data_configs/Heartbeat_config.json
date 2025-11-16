@@ -1,0 +1,11 @@
+{
+  "dataset_name": "Heartbeat",
+  "labels": ["abnormal", "normal"],
+  "N_max": 50,
+  "timestamp_column": "timestamp",
+  "data_columns": ["a_1", "a_2", "a_3"],
+  "window_size": 128,
+  "step_size": 16,
+  "normalize_input": false,
+  "prenormalize": true
+}
