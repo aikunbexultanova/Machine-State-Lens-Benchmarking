@@ -1,0 +1,12 @@
+{
+  "dataset_name": "DistalPhalanxOutlineCorrect",
+  "labels": ["0", "1"],
+  "N_max": 222,
+  "test_file_idx_max": 115,
+  "timestamp_column": "timestamp",
+  "data_columns": ["a_1"],
+  "window_size": 32,
+  "step_size": 8,
+  "normalize_input": false,
+  "prenormalize": false
+}

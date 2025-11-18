@@ -1,0 +1,12 @@
+{
+  "dataset_name": "Chinatown",
+  "labels": ["1", "2"],
+  "N_max": 10,
+  "test_file_idx_max": 94,
+  "timestamp_column": "timestamp",
+  "data_columns": ["a_1"],
+  "window_size": 16,
+  "step_size": 4,
+  "normalize_input": false,
+  "prenormalize": false
+}

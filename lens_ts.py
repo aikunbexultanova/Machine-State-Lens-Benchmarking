@@ -198,14 +198,14 @@ if __name__ == "__main__":
         config = json.load(f)
     
     rng = random.Random(42)
-    reduced_test_file_numbers = sorted(rng.sample(range(10), 3))
-    print(reduced_test_file_numbers) #[0, 1, 4]
+    reduced_test_file_numbers = sorted(rng.sample(range(50), 3))
+    print(reduced_test_file_numbers)
     
-    reduced_n_shots = sorted(rng.sample(range(1, config["N_max"] + 1), 5))
-    print(reduced_n_shots) # [1, 3, 4, 6, 10]
+    reduced_n_shots = sorted(rng.sample(range(1, config["N_max"] + 1), 7))
+    print(reduced_n_shots) 
     
-    reduced_labels = sorted(rng.sample(config["labels"], 5))
-    print(reduced_labels) # ['0', '1', '6', '7', '8']
+    reduced_labels = sorted(rng.sample(config["labels"], 3))
+    print(reduced_labels)
 
     for gt_class in reduced_labels:
         for file_number in reduced_test_file_numbers:

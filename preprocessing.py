@@ -61,7 +61,9 @@ def preprocess_dataset(args):
             sample_id_in_activity = per_label_counts[label_str]
             prepare_sample(args.dataset_output_dir, args.dataset_name, t, sensor_data[sample_id], sample_id_in_activity, label_str, args.dataset_type, train_or_test)
             
-            per_label_counts[label_str] += 1    
+            per_label_counts[label_str] += 1  
+        print(train_or_test, min(per_label_counts.values()))
+        print(per_label_counts)    
     return    
             
 

@@ -1,0 +1,12 @@
+{
+  "dataset_name": "Car",
+  "labels": ["1", "2"],
+  "N_max": 11,
+  "test_file_idx_max": 13,
+  "timestamp_column": "timestamp",
+  "data_columns": ["a_1"],
+  "window_size": 256,
+  "step_size": 32,
+  "normalize_input": false,
+  "prenormalize": false
+}

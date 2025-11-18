@@ -1,0 +1,12 @@
+{
+  "dataset_name": "DiatomSizeReduction",
+  "labels": ["1", "2", "3", "4"],
+  "N_max": 1,
+  "test_file_idx_max": 33,
+  "timestamp_column": "timestamp",
+  "data_columns": ["a_1"],
+  "window_size": 128,
+  "step_size": 16,
+  "normalize_input": false,
+  "prenormalize": false
+}

@@ -1,0 +1,12 @@
+{
+  "dataset_name": "HouseTwenty",
+  "labels": ["1", "2"],
+  "N_max": 20,
+  "test_file_idx_max": 50,
+  "timestamp_column": "timestamp",
+  "data_columns": ["a_1"],
+  "window_size": 1024,
+  "step_size": 128,
+  "normalize_input": false,
+  "prenormalize": false
+}

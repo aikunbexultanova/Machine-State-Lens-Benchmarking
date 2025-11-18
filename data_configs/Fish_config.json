@@ -1,0 +1,12 @@
+{
+  "dataset_name": "Fish",
+  "labels": ["1", "2", "3", "4", "5", "6", "7"],
+  "N_max": 21,
+  "test_file_idx_max": 22,
+  "timestamp_column": "timestamp",
+  "data_columns": ["a_1"],
+  "window_size": 256,
+  "step_size": 32,
+  "normalize_input": false,
+  "prenormalize": false
+}

@@ -1,0 +1,12 @@
+{
+  "dataset_name": "FordB",
+  "labels": ["1", "-1"],
+  "N_max": 1776,
+  "test_file_idx_max": 401,
+  "timestamp_column": "timestamp",
+  "data_columns": ["a_1"],
+  "window_size": 256,
+  "step_size": 32,
+  "normalize_input": false,
+  "prenormalize": false
+}
