@@ -17,7 +17,7 @@ from collections import defaultdict
 from tqdm import tqdm
 import sys
 from preprocessing import preprocess_dataset
-from eval_script import eval_results
+from eval_script import eval_results, save_config
 
 
 async def main(args, config, input_file, eval_file, gt_class, n):
@@ -196,15 +196,17 @@ if __name__ == "__main__":
     
     with open(f"{args.base_config_dir}/{args.dataset_name}_config.json", "r", encoding="utf-8") as f:
         config = json.load(f)
+          
+    print(args.dataset_name) 
     
     rng = random.Random(42)
-    reduced_test_file_numbers = sorted(rng.sample(range(50), 3))
+    reduced_test_file_numbers = sorted(rng.sample(range(1, config["test_file_idx_max"]), 3))
     print(reduced_test_file_numbers)
     
     reduced_n_shots = sorted(rng.sample(range(1, config["N_max"] + 1), 7))
     print(reduced_n_shots) 
     
-    reduced_labels = sorted(rng.sample(config["labels"], 3))
+    reduced_labels = sorted(rng.sample(config["labels"], min(len(config["labels"]), 3)))
     print(reduced_labels)
 
     for gt_class in reduced_labels:
