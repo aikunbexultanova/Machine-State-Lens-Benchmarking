@@ -1,0 +1,27 @@
+{
+  "dataset_name": "PowerCons",
+  "labels": [
+    "1",
+    "2"
+  ],
+  "N_max": 90,
+  "test_file_idx_max": 90,
+  "timestamp_column": "timestamp",
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    180,
+    144,
+    1
+  ],
+  "test_data_shape": [
+    180,
+    144,
+    1
+  ],
+  "window_size": 128,
+  "step_size": 16,
+  "normalize_input": false,
+  "prenormalize": false
+}

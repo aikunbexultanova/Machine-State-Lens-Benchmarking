@@ -1,12 +1,27 @@
 {
   "dataset_name": "ECGFiveDays",
-  "labels": ["1", "2"],
+  "labels": [
+    "1",
+    "2"
+  ],
   "N_max": 9,
   "test_file_idx_max": 428,
   "timestamp_column": "timestamp",
-  "data_columns": ["a_1"],
-  "window_size": 64,
-  "step_size": 8,
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    23,
+    136,
+    1
+  ],
+  "test_data_shape": [
+    861,
+    136,
+    1
+  ],
+  "window_size": 128,
+  "step_size": 16,
   "normalize_input": false,
   "prenormalize": false
 }

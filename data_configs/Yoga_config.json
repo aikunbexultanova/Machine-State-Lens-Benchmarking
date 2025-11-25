@@ -1,0 +1,27 @@
+{
+  "dataset_name": "Yoga",
+  "labels": [
+    "1",
+    "2"
+  ],
+  "N_max": 137,
+  "test_file_idx_max": 1393,
+  "timestamp_column": "timestamp",
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    300,
+    426,
+    1
+  ],
+  "test_data_shape": [
+    3000,
+    426,
+    1
+  ],
+  "window_size": 256,
+  "step_size": 32,
+  "normalize_input": false,
+  "prenormalize": false
+}

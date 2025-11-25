@@ -1,0 +1,30 @@
+{
+  "dataset_name": "SemgHandSubjectCh2",
+  "labels": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5"
+  ],
+  "N_max": 90,
+  "test_file_idx_max": 90,
+  "timestamp_column": "timestamp",
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    450,
+    1500,
+    1
+  ],
+  "test_data_shape": [
+    450,
+    1500,
+    1
+  ],
+  "window_size": 1024,
+  "step_size": 128,
+  "normalize_input": false,
+  "prenormalize": false
+}

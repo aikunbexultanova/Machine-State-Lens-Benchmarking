@@ -1,12 +1,28 @@
 {
   "dataset_name": "ChlorineConcentration",
-  "labels": ["1", "2", "3"],
+  "labels": [
+    "1",
+    "2",
+    "3"
+  ],
   "N_max": 91,
   "test_file_idx_max": 886,
   "timestamp_column": "timestamp",
-  "data_columns": ["a_1"],
-  "window_size": 64,
-  "step_size": 8,
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    467,
+    166,
+    1
+  ],
+  "test_data_shape": [
+    3840,
+    166,
+    1
+  ],
+  "window_size": 128,
+  "step_size": 16,
   "normalize_input": false,
   "prenormalize": false
 }

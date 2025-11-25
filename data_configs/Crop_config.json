@@ -1,12 +1,48 @@
 {
   "dataset_name": "Crop",
-  "labels": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
-             "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"],
+  "labels": [
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "2",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9"
+  ],
   "N_max": 300,
   "test_file_idx_max": 700,
   "timestamp_column": "timestamp",
-  "data_columns": ["a_1"],
-  "window_size": 16,
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    7200,
+    46,
+    1
+  ],
+  "test_data_shape": [
+    16800,
+    46,
+    1
+  ],
+  "window_size": 32,
   "step_size": 4,
   "normalize_input": false,
   "prenormalize": false

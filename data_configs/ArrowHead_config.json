@@ -1,10 +1,26 @@
 {
   "dataset_name": "ArrowHead",
-  "labels": ["0", "1", "2"],
+  "labels": [
+    "0",
+    "1",
+    "2"
+  ],
   "N_max": 12,
   "test_file_idx_max": 53,
   "timestamp_column": "timestamp",
-  "data_columns": ["a_1"],
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    36,
+    251,
+    1
+  ],
+  "test_data_shape": [
+    175,
+    251,
+    1
+  ],
   "window_size": 128,
   "step_size": 16,
   "normalize_input": false,

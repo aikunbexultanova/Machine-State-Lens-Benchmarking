@@ -1,12 +1,29 @@
 {
   "dataset_name": "EthanolLevel",
-  "labels": ["1", "2", "3", "4"],
+  "labels": [
+    "1",
+    "2",
+    "3",
+    "4"
+  ],
   "N_max": 126,
   "test_file_idx_max": 124,
   "timestamp_column": "timestamp",
-  "data_columns": ["a_1"],
-  "window_size": 512,
-  "step_size": 64,
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    504,
+    1751,
+    1
+  ],
+  "test_data_shape": [
+    500,
+    1751,
+    1
+  ],
+  "window_size": 1024,
+  "step_size": 128,
   "normalize_input": false,
   "prenormalize": false
 }

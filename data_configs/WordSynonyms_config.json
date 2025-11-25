@@ -1,0 +1,50 @@
+{
+  "dataset_name": "WordSynonyms",
+  "labels": [
+    "1",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "2",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9"
+  ],
+  "N_max": 2,
+  "test_file_idx_max": 8,
+  "timestamp_column": "timestamp",
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    267,
+    270,
+    1
+  ],
+  "test_data_shape": [
+    638,
+    270,
+    1
+  ],
+  "window_size": 256,
+  "step_size": 32,
+  "normalize_input": false,
+  "prenormalize": false
+}

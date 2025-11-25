@@ -1,0 +1,27 @@
+{
+  "dataset_name": "PhalangesOutlinesCorrect",
+  "labels": [
+    "0",
+    "1"
+  ],
+  "N_max": 628,
+  "test_file_idx_max": 332,
+  "timestamp_column": "timestamp",
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    1800,
+    80,
+    1
+  ],
+  "test_data_shape": [
+    858,
+    80,
+    1
+  ],
+  "window_size": 64,
+  "step_size": 8,
+  "normalize_input": false,
+  "prenormalize": false
+}

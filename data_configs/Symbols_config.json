@@ -1,0 +1,31 @@
+{
+  "dataset_name": "Symbols",
+  "labels": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+  ],
+  "N_max": 3,
+  "test_file_idx_max": 157,
+  "timestamp_column": "timestamp",
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    25,
+    398,
+    1
+  ],
+  "test_data_shape": [
+    995,
+    398,
+    1
+  ],
+  "window_size": 256,
+  "step_size": 32,
+  "normalize_input": false,
+  "prenormalize": false
+}

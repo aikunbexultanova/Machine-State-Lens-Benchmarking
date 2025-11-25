@@ -1,12 +1,27 @@
 {
   "dataset_name": "BirdChicken",
-  "labels": ["1", "2"],
+  "labels": [
+    "1",
+    "2"
+  ],
   "N_max": 10,
   "test_file_idx_max": 10,
   "timestamp_column": "timestamp",
-  "data_columns": ["a_1"],
-  "window_size": 256,
-  "step_size": 32,
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    20,
+    512,
+    1
+  ],
+  "test_data_shape": [
+    20,
+    512,
+    1
+  ],
+  "window_size": 512,
+  "step_size": 64,
   "normalize_input": false,
   "prenormalize": false
 }

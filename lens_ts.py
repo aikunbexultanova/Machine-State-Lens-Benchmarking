@@ -179,11 +179,11 @@ if __name__ == "__main__":
     parser.add_argument("--api_key", default="ai048b7-9a61874c48", type=str)
     parser.add_argument("--api_endpoint", default="https://api.archetypeai.dev/v0.5", type=str)
     
-    parser.add_argument("--dataset_name", default="ACSF1", type=str)
+    parser.add_argument("--dataset_name", default="Coffee", type=str)
     parser.add_argument("--dataset_type", default="Univariate", type=str)
     parser.add_argument("--dataset_output_dir", default="data_processed", type=str)
     parser.add_argument("--base_config_dir", default="data_configs", type=str)
-    parser.add_argument("--base_output_dir", default="out", type=str)
+    parser.add_argument("--base_output_dir", default="_lens_results_", type=str)
     parser.add_argument("--frequency", default=0.1, type=float)
     
     parser.add_argument("--repeats", type=int, default=3, help="How many randomizations per setting")
@@ -200,7 +200,7 @@ if __name__ == "__main__":
     print(args.dataset_name) 
     
     rng = random.Random(42)
-    reduced_test_file_numbers = sorted(rng.sample(range(1, config["test_file_idx_max"]), 3))
+    reduced_test_file_numbers = sorted(rng.sample(range(1, config["test_file_idx_max"]), 20))
     print(reduced_test_file_numbers)
     
     reduced_n_shots = sorted(rng.sample(range(1, config["N_max"] + 1), 7))
@@ -214,7 +214,7 @@ if __name__ == "__main__":
             input_file = f"data_processed/{args.dataset_name}/prepared_test/{gt_class}_test_{file_number}.csv"
             assert os.path.exists(input_file)
             for n in reduced_n_shots:  
-                lens_output_dir = f"{args.base_output_dir}/lens_results_{n}shot"
+                lens_output_dir = f"{args.base_output_dir}{args.dataset_name}/lens_results_{n}shot"
                 os.makedirs(lens_output_dir, exist_ok=True)
                 
                 eval_file = os.path.join(lens_output_dir, f"{gt_class}_{file_number}.csv")

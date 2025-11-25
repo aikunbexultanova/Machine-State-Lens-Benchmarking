@@ -9,9 +9,10 @@ import os
 
 FNAME_RE = re.compile(r'^(?P<activity>\w+)_(?P<file_number>\d+)_seed(?P<seed>\d+)\.csv$')
 
-def save_config(config: dict, base_output_dir: str):
-    with open(f"{base_output_dir}/config.json", "w") as f:
+def save_config(config: dict, file_path: str):
+    with open(file_path, "w") as f:
         json.dump(config, f, indent=2)
+    print(f"Saved config file to: {file_path}")    
 
 
 def compute_metrics(gt, pred):
@@ -49,7 +50,7 @@ def gather_one_dir(shot_dir: Path, shot: int, labels: list):
 
 def eval_results(args, config):
             
-    save_config(config, args.base_output_dir)      
+    save_config(config, f"{args.base_output_dir}/config.json")      
         
     per_seed_rows = []
     for shot in range(1, config["N_max"]+1):  # lens_results_1shot ... lens_results_10shot
@@ -97,6 +98,8 @@ def eval_results(args, config):
     df_shot_activity.to_csv(out_metrics / "metrics_seedavg_per_shot_activity.csv", index=False)
     by_shot.to_csv(out_metrics / "metrics_shot.csv", index=False)
     by_activity.to_csv(out_metrics / "metrics_activity.csv", index=False)
+    
+    print(f"metrics saved to {args.base_output_dir}")
 
 
 if __name__ == "__main__":

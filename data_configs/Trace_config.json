@@ -1,0 +1,29 @@
+{
+  "dataset_name": "Trace",
+  "labels": [
+    "1",
+    "2",
+    "3",
+    "4"
+  ],
+  "N_max": 21,
+  "test_file_idx_max": 19,
+  "timestamp_column": "timestamp",
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    100,
+    275,
+    1
+  ],
+  "test_data_shape": [
+    100,
+    275,
+    1
+  ],
+  "window_size": 256,
+  "step_size": 32,
+  "normalize_input": false,
+  "prenormalize": false
+}

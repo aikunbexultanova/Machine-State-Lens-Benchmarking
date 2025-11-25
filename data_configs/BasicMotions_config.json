@@ -1,0 +1,26 @@
+{
+  "dataset_name": "BasicMotions",
+  "labels": [
+    "Badminton",
+    "Running",
+    "Standing",
+    "Walking"
+  ],
+  "N_max": 10,
+  "test_file_idx_max": 10,
+  "timestamp_column": "timestamp",
+  "train_data_shape": [
+    40,
+    100,
+    6
+  ],
+  "test_data_shape": [
+    40,
+    100,
+    6
+  ],
+  "window_size": 64,
+  "step_size": 8,
+  "normalize_input": false,
+  "prenormalize": false
+}

@@ -1,10 +1,25 @@
 {
   "dataset_name": "FordA",
-  "labels": ["1", "-1"],
+  "labels": [
+    "-1",
+    "1"
+  ],
   "N_max": 1755,
   "test_file_idx_max": 639,
   "timestamp_column": "timestamp",
-  "data_columns": ["a_1"],
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    3601,
+    500,
+    1
+  ],
+  "test_data_shape": [
+    1320,
+    500,
+    1
+  ],
   "window_size": 256,
   "step_size": 32,
   "normalize_input": false,

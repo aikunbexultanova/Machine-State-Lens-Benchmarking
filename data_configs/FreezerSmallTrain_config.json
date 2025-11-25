@@ -1,12 +1,27 @@
 {
   "dataset_name": "FreezerSmallTrain",
-  "labels": ["1", "2"],
+  "labels": [
+    "1",
+    "2"
+  ],
   "N_max": 14,
   "test_file_idx_max": 1425,
   "timestamp_column": "timestamp",
-  "data_columns": ["a_1"],
-  "window_size": 128,
-  "step_size": 16,
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    28,
+    301,
+    1
+  ],
+  "test_data_shape": [
+    2850,
+    301,
+    1
+  ],
+  "window_size": 256,
+  "step_size": 32,
   "normalize_input": false,
   "prenormalize": false
 }

@@ -1,10 +1,25 @@
 {
   "dataset_name": "Ham",
-  "labels": ["1", "2"],
+  "labels": [
+    "1",
+    "2"
+  ],
   "N_max": 52,
   "test_file_idx_max": 51,
   "timestamp_column": "timestamp",
-  "data_columns": ["a_1"],
+  "data_columns": [
+    "a1"
+  ],
+  "train_data_shape": [
+    109,
+    431,
+    1
+  ],
+  "test_data_shape": [
+    105,
+    431,
+    1
+  ],
   "window_size": 256,
   "step_size": 32,
   "normalize_input": false,
