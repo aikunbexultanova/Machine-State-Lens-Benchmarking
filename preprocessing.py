@@ -105,6 +105,8 @@ def preprocess_dataset(args, generate_config=True):
         else:
             test_file_idx_max = min(per_label_counts.values())
             test_data_shape = data["channel_data"][0].shape
+            
+    config = None
     
     if generate_config:
         config_file_path = f"{args.base_config_dir}/{args.dataset_name}_config.json"
@@ -116,15 +118,15 @@ def preprocess_dataset(args, generate_config=True):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    # parser.add_argument("--dataset_name", default="ACSF1", type=str)
+    parser.add_argument("--dataset_name", default="ACSF1", type=str)
     parser.add_argument("--dataset_type", default="Univariate", type=str)
     parser.add_argument("--dataset_output_dir", default="data_processed", type=str)
     parser.add_argument("--base_config_dir", default="data_configs", type=str)
     parser.add_argument("--frequency", default=0.1, type=float)
     args = parser.parse_args()
     
-    
-    dataset_names = (os.listdir(f'../data/{args.dataset_type}_ts'))
-    for dataset_name in tqdm(dataset_names):
-        args.dataset_name = dataset_name
-        preprocess_dataset(args, generate_config=True)
+    preprocess_dataset(args, generate_config=False)
+    # dataset_names = (os.listdir(f'../data/{args.dataset_type}_ts'))
+    # for dataset_name in tqdm(dataset_names):
+    #     args.dataset_name = dataset_name
+    #     preprocess_dataset(args, generate_config=True)
