@@ -106,12 +106,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_output_dir", default="data_processed", type=str)
     parser.add_argument("--dataset_name", default="ACSF1", type=str)
-    parser.add_argument("--base_output_dir", type=str, default="_lens_results")
+    parser.add_argument("--base_output_dir", type=str, default="lens_results")
     parser.add_argument("--base_config_dir", default="data_configs", type=str)
     
     args = parser.parse_args()
     
     with open(f"{args.base_config_dir}/{args.dataset_name}_config.json", "r", encoding="utf-8") as f:
         config = json.load(f)
-    args.base_output_dir = f"{args.base_output_dir}_{args.dataset_name}" 
+    args.base_output_dir = f"{args.base_output_dir}/{args.dataset_name}" 
     eval_results(args, config)    
