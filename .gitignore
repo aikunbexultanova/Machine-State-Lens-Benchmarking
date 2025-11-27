@@ -1,5 +1,5 @@
 # build/outputs
-_lens_results*/
+lens_results
 data_processed/
 out
 logs
