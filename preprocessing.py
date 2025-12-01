@@ -57,7 +57,9 @@ def generate_config_file(dataset_name, train_file_idx_max, test_file_idx_max, la
     config["test_file_idx_max"] = test_file_idx_max
     config["timestamp_column"] = "timestamp"
     if train_data_shape[2] == 1:
-        config["data_columns"] = ["a1"]
+        config["data_columns"] = ["a_1"]
+    else:
+        config["data_columns"] = ["a_1", "a_2", "a_3"]    
     config["train_data_shape"] = train_data_shape 
     config["test_data_shape"] = test_data_shape 
     window, step = choose_window_and_step(train_data_shape[1])
@@ -75,7 +77,7 @@ def preprocess_dataset(args, generate_config=True):
     for train_or_test in ["TRAIN", "TEST"]:
         per_label_counts = defaultdict(int)
         
-        with open(f'../data/{args.dataset_type}_ts/{args.dataset_name}/{args.dataset_name}_{train_or_test}.pickle', 'rb') as f:
+        with open(f'./data/{args.dataset_type}_ts/{args.dataset_name}/{args.dataset_name}_{train_or_test}.pickle', 'rb') as f:
             data = pickle.load(f)
         print(f"{train_or_test} data shape: ", data["channel_data"][0].shape)
         print(f"{train_or_test} label shape:", data["channel_data"][1].shape)
@@ -109,10 +111,10 @@ def preprocess_dataset(args, generate_config=True):
     config = None
     
     if generate_config:
-        config_file_path = f"{args.base_config_dir}/{args.dataset_name}_config.json"
-        os.makedirs(args.base_config_dir, exist_ok=True)
+        config_file_path = f"tsc_1/{args.base_config_dir}/{args.dataset_name}_config.json"
+        os.makedirs(f"tsc_1/{args.base_config_dir}", exist_ok=True)
         config = generate_config_file(args.dataset_name, train_file_idx_max, test_file_idx_max, labels, train_data_shape, test_data_shape, config_file_path)
-        
+        # print(config["data_columns"])
     return config
             
 
@@ -125,8 +127,8 @@ if __name__ == "__main__":
     parser.add_argument("--frequency", default=0.1, type=float)
     args = parser.parse_args()
     
-    preprocess_dataset(args, generate_config=False)
-    # dataset_names = (os.listdir(f'../data/{args.dataset_type}_ts'))
-    # for dataset_name in tqdm(dataset_names):
-    #     args.dataset_name = dataset_name
-    #     preprocess_dataset(args, generate_config=True)
+    # preprocess_dataset(args, generate_config=True)
+    dataset_names = (os.listdir(f'../data/{args.dataset_type}_ts'))
+    for dataset_name in tqdm(dataset_names):
+        args.dataset_name = dataset_name
+        preprocess_dataset(args, generate_config=True)

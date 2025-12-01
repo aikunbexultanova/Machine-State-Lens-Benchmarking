@@ -54,7 +54,7 @@ def eval_results(args, config):
         
     per_seed_rows = []
     for shot in range(1, config["N_max"]+1):  # lens_results_1shot ... lens_results_10shot
-        shot_dir = Path(f"{args.base_output_dir}/lens_results_{shot}shot")
+        shot_dir = Path(f"{args.base_output_dir}/{args.dataset_name}/lens_results_{shot}shot")
         if not shot_dir.exists():
             continue
         df_dir = gather_one_dir(shot_dir, shot, config["labels"])
@@ -91,7 +91,7 @@ def eval_results(args, config):
         .round(3)
     )
 
-    out_metrics = Path(f"{args.base_output_dir}/metrics")
+    out_metrics = Path(f"{args.base_output_dir}/{args.dataset_name}/metrics")
     out_metrics.mkdir(exist_ok=True, parents=True)
     df_per_seed.to_csv(out_metrics / "metrics_all_seeds.csv", index=False)
     df_per_file.to_csv(out_metrics / "metrics_all_files.csv", index=False)

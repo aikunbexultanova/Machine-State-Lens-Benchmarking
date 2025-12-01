@@ -177,13 +177,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--lens_id", default="lns-1d519091822706e2-bc108andqxf8b4os", type=str)
     parser.add_argument("--api_key", default="ai048b7-9a61874c48", type=str)
-    parser.add_argument("--api_endpoint", default="https://api.archetypeai.dev/v0.5", type=str)
+    parser.add_argument("--api_endpoint", default="https://api.u1.archetypeai.app/v0.5", type=str)
     
     parser.add_argument("--dataset_name", default="Coffee", type=str)
     parser.add_argument("--dataset_type", default="Univariate", type=str)
-    parser.add_argument("--dataset_output_dir", default="data_processed", type=str)
-    parser.add_argument("--base_config_dir", default="data_configs", type=str)
-    parser.add_argument("--base_output_dir", default="lens_results", type=str)
+    parser.add_argument("--dataset_output_dir", default="tsc_1/data_processed", type=str)
+    parser.add_argument("--base_config_dir", default="tsc_1/data_configs", type=str)
+    parser.add_argument("--base_output_dir", default="tsc_1/lens_results", type=str)
     parser.add_argument("--frequency", default=0.1, type=float)
     
     parser.add_argument("--repeats", type=int, default=3, help="How many randomizations per setting")
@@ -211,7 +211,7 @@ if __name__ == "__main__":
 
     for gt_class in reduced_labels:
         for file_number in reduced_test_file_numbers:
-            input_file = f"data_processed/{args.dataset_name}/prepared_test/{gt_class}_test_{file_number}.csv"
+            input_file = f"{args.dataset_output_dir}/{args.dataset_name}/prepared_test/{gt_class}_test_{file_number}.csv"
             assert os.path.exists(input_file)
             for n in reduced_n_shots:  
                 lens_output_dir = f"{args.base_output_dir}/{args.dataset_name}/lens_results_{n}shot"
