@@ -8,7 +8,7 @@
   "test_file_idx_max": 94,
   "timestamp_column": "timestamp",
   "data_columns": [
-    "a1"
+    "a_1"
   ],
   "train_data_shape": [
     20,

@@ -128,7 +128,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # preprocess_dataset(args, generate_config=True)
-    dataset_names = (os.listdir(f'../data/{args.dataset_type}_ts'))
+    dataset_names = (os.listdir(f'data/{args.dataset_type}_ts'))
     for dataset_name in tqdm(dataset_names):
         args.dataset_name = dataset_name
         preprocess_dataset(args, generate_config=True)

@@ -30,7 +30,7 @@
   "test_file_idx_max": 700,
   "timestamp_column": "timestamp",
   "data_columns": [
-    "a1"
+    "a_1"
   ],
   "train_data_shape": [
     7200,
