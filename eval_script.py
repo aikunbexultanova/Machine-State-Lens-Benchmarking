@@ -50,7 +50,7 @@ def gather_one_dir(shot_dir: Path, shot: int, labels: list):
 
 def eval_results(args, config):
             
-    save_config(config, f"{args.base_output_dir}/config.json")      
+    save_config(config, f"{args.base_output_dir}/{args.dataset_name}/config.json")      
         
     per_seed_rows = []
     for shot in range(1, config["N_max"]+1):  # lens_results_1shot ... lens_results_10shot
@@ -97,21 +97,22 @@ def eval_results(args, config):
     df_per_file.to_csv(out_metrics / "metrics_all_files.csv", index=False)
     df_shot_activity.to_csv(out_metrics / "metrics_seedavg_per_shot_activity.csv", index=False)
     by_shot.to_csv(out_metrics / "metrics_shot.csv", index=False)
+    print(by_shot)
     by_activity.to_csv(out_metrics / "metrics_activity.csv", index=False)
     
-    print(f"metrics saved to {args.base_output_dir}")
+    print(f"metrics saved to {str(out_metrics)}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_output_dir", default="data_processed", type=str)
     parser.add_argument("--dataset_name", default="ACSF1", type=str)
-    parser.add_argument("--base_output_dir", type=str, default="lens_results")
-    parser.add_argument("--base_config_dir", default="data_configs", type=str)
+    parser.add_argument("--base_output_dir", type=str, default="tsc_1/lens_results")
+    parser.add_argument("--base_config_dir", default="tsc_1/data_configs", type=str)
     
     args = parser.parse_args()
     
     with open(f"{args.base_config_dir}/{args.dataset_name}_config.json", "r", encoding="utf-8") as f:
         config = json.load(f)
-    args.base_output_dir = f"{args.base_output_dir}/{args.dataset_name}" 
+    # args.base_output_dir = f"{args.base_output_dir}/{args.dataset_name}" 
     eval_results(args, config)    

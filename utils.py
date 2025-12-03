@@ -91,10 +91,11 @@ def get_csv_chunks(file_path: str, data_columns: list, time_variate: str = None,
     logging.debug(f"cols to extract: {cols_to_extract}")
 
     # each datacolumn is treated as different variate
-    chunks = []
+    chunks = [] #modify window == window_size
     for i in range(0, len(df), step_size):
         window = df.iloc[i:i + window_size][cols_to_extract]
-        chunks.append(window)
+        if window.shape[0] == window_size:
+            chunks.append(window)
     return chunks
 
 # timepoint mask utility function

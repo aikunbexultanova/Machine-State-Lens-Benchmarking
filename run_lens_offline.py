@@ -22,13 +22,17 @@ from eval_script import eval_results
 # source atai_core/common/atai_py/.venv/bin/activate
 
 
-def compute_embeddings(args, train_or_test, config, omega_engine, apply_instance_norm=True, normalize_embeds=True):
+def compute_embeddings(args, train_or_test, config, omega_engine, normalize_embeds=False):
     window_size = config["window_size"]
     step_size = config["step_size"]
     base = Path(f"{args.dataset_output_dir}/{args.dataset_name}/prepared_{train_or_test}")
     files_for_emb = []
     for label in config["labels"]:
-        for i in range(config['N_max']):
+        if train_or_test =="train":
+            i_max = config['N_max']
+        else:
+            i_max = config["test_file_idx_max"]
+        for i in range(i_max):
             p = base / f"{label}_{train_or_test}_{i}.csv"
             if p.exists():
                 files_for_emb.append((label, str(p)))
@@ -62,7 +66,7 @@ def compute_embeddings(args, train_or_test, config, omega_engine, apply_instance
                 sample = {"timeseries": padded_data, "timepoint_mask": timepoint_mask}
                 input_data.append(sample)
 
-            output = omega_engine.generate(input_data, normalize=apply_instance_norm)
+            output = omega_engine.generate(input_data, normalize=config["normalize_input"])
             tokens = output["embeddings"].embeds.cpu()   # [n_channels, n_tokens, d_model]
 
             cls_tokens = tokens[:, -1, :]                # [n_channels, d_model]
@@ -100,7 +104,7 @@ def select_nshot_train_subset(train_emb, train_labels, train_meta, config, args,
 
     rng_local = random.Random(seed)
 
-    files_nshot: List[Tuple[str, str]] = []
+    files_nshot = []
 
     for label in config["labels"]:
         idxs = rng_local.sample(range(N), k=k)
@@ -226,7 +230,7 @@ if __name__ == "__main__":
     parser.add_argument("--base_output_dir", default="tsc_1/lens_results", type=str)
     parser.add_argument("--frequency", default=0.1, type=float)
     
-    parser.add_argument("--repeats", type=int, default=5, help="How many randomizations per setting")
+    parser.add_argument("--repeats", type=int, default=3, help="How many randomizations per setting")
     parser.add_argument("--seed_base", type=int, default=0, help="Base for deterministic seeds")
     parser.add_argument("--knn_k", type=int, default=5, help="k for kNN")
     
@@ -248,8 +252,8 @@ if __name__ == "__main__":
     test_emb, test_labels, test_meta = compute_embeddings(args, "test", config, omega_engine)
 
     for gt_class in config["labels"]:
-        for file_number in range(1, config["test_file_idx_max"]):
-            for n in range(1, config["N_max"] + 1):
+        for file_number in range(0, config["test_file_idx_max"]):
+            for n in range(1, config["N_max"] + 1): 
                 for r in range(args.repeats):
                     seed = args.seed_base + r
                     run_offline_inference_for_file(args, config, train_emb, train_labels, train_meta,

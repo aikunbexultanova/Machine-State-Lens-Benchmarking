@@ -200,7 +200,7 @@ if __name__ == "__main__":
     print(args.dataset_name) 
     
     rng = random.Random(42)
-    reduced_test_file_numbers = sorted(rng.sample(range(1, config["test_file_idx_max"]), min(config["test_file_idx_max"], 10)))
+    reduced_test_file_numbers = sorted(rng.sample(range(1, config["test_file_idx_max"]+1), min(config["test_file_idx_max"], 10)))
     print(reduced_test_file_numbers)
     
     reduced_n_shots = sorted(rng.sample(range(1, config["N_max"] + 1), min(config["N_max"], 7)))
@@ -213,7 +213,7 @@ if __name__ == "__main__":
         for file_number in reduced_test_file_numbers:
             input_file = f"{args.dataset_output_dir}/{args.dataset_name}/prepared_test/{gt_class}_test_{file_number}.csv"
             assert os.path.exists(input_file)
-            for n in reduced_n_shots:  
+            for n in reduced_n_shots: 
                 lens_output_dir = f"{args.base_output_dir}/{args.dataset_name}/lens_results_{n}shot"
                 os.makedirs(lens_output_dir, exist_ok=True)
                 
@@ -232,4 +232,4 @@ if __name__ == "__main__":
                     
                     asyncio.run(main(args, config, input_file, str(out_csv), gt_class, n))
     
-    eval_results(args, config)                
+    eval_results(args, config)
